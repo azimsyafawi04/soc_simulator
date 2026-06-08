@@ -8,33 +8,54 @@ Welcome to the Educational SIEM Platform! This project is designed as a Security
 - **ISMS Compliance Reporting:** Automatically generate and export ISO/IEC 27001:2022 compliant PDF reports.
 - **Role-Based Access Control:** Differentiated views for L1/L2 Analysts and L3 Admins.
 
-## Tutorial: How to Use the System
+## Installation and Setup
+
+### Prerequisites
+- Docker and Docker Compose installed on your system.
+- Git (optional, for version control).
 
 ### 1. Starting the Platform
-The platform runs on Docker. To start the entire stack (Frontend, Backend, Database, Elasticsearch, Redis), run the following command in the root directory:
+The platform is fully containerized and runs on Docker. To start the entire stack (Frontend, Backend, Database, Elasticsearch, Redis), run the following command in the root directory:
 ```bash
 docker-compose up -d --build
 ```
-Once started, open your web browser and navigate to `http://localhost:5173`.
+Once the build completes and the containers are running, open your web browser and navigate to `http://localhost:5173`.
 
 ### 2. Logging In
 - The system uses strict Role-Based Access Control (RBAC). Registration is restricted to Admins.
 - To access all features (including User Management), log in as an **L3 Admin**.
 - To simulate an analyst role, log in as an **L1/L2 Analyst**.
 
-### 3. Exploring the Dashboard
-- **Dashboard:** Provides a high-level overview of active alerts, recent incidents, and system metrics.
-- **Endpoints & Network:** Monitor connected devices and network traffic flows.
+---
 
-### 4. Attack Analysis (Threat Hunting)
-- Navigate to the **Attack Analysis** tab in the sidebar.
-- You will see an interactive timeline of network traffic. Spikes indicate potential volumetric attacks (e.g., DDoS).
-- Click on any row in the **Raw Payload & IOC Inspection** table to expand it. This reveals the actual malicious payload (e.g., SQL Injection, Command Injection) and provides quick actions like "Block IP" or "Export PCAP".
+## System Interface & Usage
 
-### 5. Generating an ISMS Report
-- Navigate to the **ISMS Report** tab.
-- Click the **"Generate Report"** button. The system will simulate pulling live data from the SIEM database and populate a formal ISO/IEC 27001 compliance report.
-- Once generated, click **"Export to PDF"**. Your browser's print dialog will open. Save it as a PDF for a cleanly formatted, print-ready document.
+### 1. Real-Time Security Dashboard
+![Dashboard](screenshots/dashboard.png)
+**Purpose:** Provides a high-level, real-time overview of the organization's security posture.
+**Usage:** Use this screen to monitor active incidents, critical alerts, and total event volume over a 24-hour period. The Live Alert Feed instantly shows incoming attacks such as SQL Injections or Multiple Failed Logins.
+
+### 2. Endpoints Management
+![Endpoints](screenshots/endpoints.png)
+**Purpose:** Tracks all monitored assets (servers, user laptops, etc.) within the network.
+**Usage:** Analysts can view the status (Online/Offline) and resource consumption (CPU & RAM) of individual endpoints. Endpoints under active attack are highlighted with red alert badges, allowing for quick isolation.
+
+### 3. Network Traffic Analysis
+![Network](screenshots/network.png)
+**Purpose:** Deep packet inspection and traffic flow monitoring.
+**Usage:** The area chart visualizes network traffic over time. Spikes indicate potential volumetric attacks (e.g., DDoS). The Top Talkers table below shows exact source and destination IP addresses, ports, and protocols for suspicious connections.
+
+### 4. Threat Hunting & Attack Analysis
+![Attack Analysis](screenshots/attack_analysis.png)
+**Purpose:** Dedicated interface for investigating active cyber attacks.
+**Usage:** When an anomaly is detected, analysts use this page to view the Attacker Profile (Origin IP, Target Asset) and MITRE ATT&CK mapping. Expanding a row in the IOC Inspection table reveals the **raw malicious payload** (e.g., SQL syntax or shell commands), enabling analysts to block the IP or export the PCAP for forensics.
+
+### 5. ISMS Compliance Report Generator
+![ISMS Report](screenshots/isms_report.png)
+**Purpose:** Automates Governance, Risk, and Compliance (GRC) reporting.
+**Usage:** Click "Generate Report" to dynamically pull the latest SIEM alert data and vulnerabilities into a formal ISO/IEC 27001:2022 framework layout. Click "Export to PDF" to generate a clean, print-ready A4 document for management or auditors.
+
+---
 
 ## Architecture
 - **Frontend:** React + Vite + Tailwind CSS + Recharts
