@@ -12,9 +12,16 @@ Welcome to the Educational SIEM Platform! This project is designed as a Security
 
 ### Prerequisites
 - Docker and Docker Compose installed on your system.
-- Git (optional, for version control).
+- Git (for downloading the repository).
 
-### 1. Starting the Platform
+### 1. Download the Project
+Open a terminal (Command Prompt, PowerShell, or Git Bash) and run:
+```bash
+git clone https://github.com/azimsyafawi04/soc_simulator.git
+cd soc_simulator
+```
+
+### 2. Starting the Platform
 The platform is fully containerized and runs on Docker. To start the entire stack (Frontend, Backend, Database, Elasticsearch, Redis), run the following command in the root directory:
 ```bash
 docker-compose up -d --build
