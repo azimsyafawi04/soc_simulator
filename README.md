@@ -10,8 +10,78 @@ Furthermore, the platform moves beyond passive monitoring by integrating a Wazuh
 
 ## Architecture Diagram
 
-<!-- [INSERT_ARCHITECTURE_DIAGRAM_HERE] -->
-*Placeholder: Please insert the system architecture diagram here.*
+```mermaid
+flowchart LR
+    %% Data Sources Layer
+    subgraph Sources ["Data Sources"]
+        direction TB
+        Win["Windows (Sysmon)"]
+        Cloud["Cloud Logs"]
+        Net["Network Appliances"]
+    end
+
+    %% Ingestion Layer
+    subgraph Ingestion ["Ingestion Layer"]
+        direction TB
+        API["FastAPI Ingestion API"]
+        Redis[("Redis Queue (Buffer)")]
+    end
+
+    %% Processing Layer
+    subgraph Processing ["Processing Layer"]
+        direction TB
+        Enrich["Log Enrichment Pipeline<br/>(GeoIP & Live Threat Intel)"]
+        Norm["ECS Normalization Worker"]
+        RBA["Detection Engine<br/>(Risk-Based Alerting)"]
+    end
+
+    %% Storage Layer
+    subgraph Storage ["Storage"]
+        ES[("Elasticsearch<br/>(Hot/Cold Storage)")]
+    end
+
+    %% Presentation Layer
+    subgraph Presentation ["Presentation Layer"]
+        direction TB
+        Dash["React Dashboard<br/>(Log Explorer)"]
+        Geo["Global Geo-Threat Map"]
+        SOAR["Incident Response<br/>(Active Response)"]
+    end
+
+    %% Primary Data Flow
+    Win & Cloud & Net -- "Raw JSON Logs" --> API
+    API --> Enrich
+    Enrich -- "Appends Meta-Data" --> Redis
+    Redis -- "Queue Pop" --> Norm
+    Norm -- "Indexes Standardized Data" --> ES
+    
+    %% Detection Flow
+    ES -- "Batch Queries" --> RBA
+    RBA -- "Risk Alerts" --> Dash
+
+    %% Presentation Flow
+    ES --> Dash
+    ES --> Geo
+    Dash --- SOAR
+
+    %% SOAR Feedback Loop
+    SOAR -- "Active Response / Containment Command" --> Sources
+
+    %% Styling
+    classDef source fill:#1e293b,stroke:#64748b,stroke-width:2px,color:#fff;
+    classDef ingest fill:#0f172a,stroke:#3b82f6,stroke-width:2px,color:#fff;
+    classDef process fill:#0f172a,stroke:#10b981,stroke-width:2px,color:#fff;
+    classDef storage fill:#0f172a,stroke:#f59e0b,stroke-width:2px,color:#fff;
+    classDef ui fill:#1e293b,stroke:#8b5cf6,stroke-width:2px,color:#fff;
+    classDef soar fill:#7f1d1d,stroke:#ef4444,stroke-width:2px,color:#fff;
+
+    class Win,Cloud,Net source;
+    class API,Redis ingest;
+    class Enrich,Norm,RBA process;
+    class ES storage;
+    class Dash,Geo ui;
+    class SOAR soar;
+```
 
 ## Key Features & Innovations
 
