@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, Users, Key, Shield, Activity, Plus, Edit2, Trash2, Save, Play, Server, X, UserCircle, Send, Eye, EyeOff } from 'lucide-react';
+import { Settings, Users, Key, Shield, Activity, Plus, Edit2, Trash2, Save, Play, Server, X, UserCircle, Send, Eye, EyeOff, BookOpen, AlertTriangle, CheckCircle } from 'lucide-react';
 
 function SettingsPage({ user }) {
   const isAdmin = user?.role === 'L3 Admin';
@@ -15,9 +15,10 @@ function SettingsPage({ user }) {
 
   // Dummy State for Rules
   const [rules, setRules] = useState([
-    { id: 1, name: 'Failed Login Brute Force', enabled: true, threshold: 5 },
-    { id: 2, name: 'SQL Injection Patterns', enabled: true, threshold: 1 },
-    { id: 3, name: 'Suspicious PowerShell Execution', enabled: false, threshold: 1 }
+    { id: 1, name: 'Password Spraying (Event 4625)', enabled: true, threshold: 5 },
+    { id: 2, name: 'Suspicious PowerShell Execution', enabled: true, threshold: 1 },
+    { id: 3, name: 'High Shannon Entropy Payload', enabled: true, threshold: 1 },
+    { id: 4, name: 'SQL Injection Patterns', enabled: true, threshold: 1 }
   ]);
 
   const toggleRule = (id) => {
@@ -37,6 +38,7 @@ function SettingsPage({ user }) {
   }
   tabs.push({ id: 'integrations', label: 'Threat Intel', icon: <Key size={18} /> });
   tabs.push({ id: 'rules', label: 'Detection Rules', icon: <Shield size={18} /> });
+  tabs.push({ id: 'playbooks', label: 'IR Playbooks', icon: <BookOpen size={18} /> });
   tabs.push({ id: 'health', label: 'System Health', icon: <Activity size={18} /> });
 
   // Modal Handlers
@@ -276,6 +278,63 @@ function SettingsPage({ user }) {
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Tab: IR Playbooks */}
+          {activeTab === 'playbooks' && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-bold">Incident Response Playbooks</h2>
+                <p className="text-gray-400 text-sm mt-1">Standardized containment and remediation policies for SOC Analysts.</p>
+              </div>
+              <div className="space-y-4">
+                
+                {/* Playbook 1 */}
+                <div className="border border-siem-border bg-white/5 rounded-lg overflow-hidden">
+                  <div className="p-4 border-b border-siem-border bg-[#1A2234] flex items-center gap-3">
+                    <Shield className="text-siem-warning" size={20} />
+                    <h3 className="font-bold text-lg text-white">Password Spraying & Brute Force</h3>
+                  </div>
+                  <div className="p-5 space-y-4">
+                    <p className="text-gray-300 text-sm leading-relaxed">
+                      Adversaries may attempt to creatively brute force many accounts by increasing the time between logon attempts. The following steps must be taken to contain the threat.
+                    </p>
+                    <div className="space-y-2">
+                      <h4 className="font-semibold text-siem-primary text-sm flex items-center gap-2"><AlertTriangle size={16}/> Containment & Remediation Steps:</h4>
+                      <ul className="list-disc pl-5 space-y-2 text-sm text-gray-400">
+                        <li>Determine the source IP and the targeted destination accounts/systems.</li>
+                        <li>Collect and analyze surrounding Windows Security Events (4624, 4625, 4648).</li>
+                        <li>Issue a mandatory password change requirement to the affected account owner(s).</li>
+                        <li>Determine if the destination accounts/systems have been fully compromised (successful logon).</li>
+                        <li>Consider quarantining, isolating, or disabling the compromised accounts immediately via Active Directory.</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Playbook 2 */}
+                <div className="border border-siem-border bg-white/5 rounded-lg overflow-hidden">
+                  <div className="p-4 border-b border-siem-border bg-[#1A2234] flex items-center gap-3">
+                    <Shield className="text-siem-critical" size={20} />
+                    <h3 className="font-bold text-lg text-white">Suspicious PowerShell Execution</h3>
+                  </div>
+                  <div className="p-5 space-y-4">
+                    <p className="text-gray-300 text-sm leading-relaxed">
+                      Execution of encoded scripts or bypassing execution policies often indicates fileless malware or lateral movement.
+                    </p>
+                    <div className="space-y-2">
+                      <h4 className="font-semibold text-siem-primary text-sm flex items-center gap-2"><CheckCircle size={16}/> Containment & Remediation Steps:</h4>
+                      <ul className="list-disc pl-5 space-y-2 text-sm text-gray-400">
+                        <li>Isolate the infected host from the network using the EDR platform.</li>
+                        <li>Extract the Base64 encoded payload and decode it safely in an isolated sandbox.</li>
+                        <li>Identify any Command and Control (C2) domains contacted by the script and block them at the perimeter firewall.</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
           )}

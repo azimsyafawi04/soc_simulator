@@ -3,6 +3,10 @@ from pydantic import BaseModel
 from typing import Dict, Any
 from datetime import datetime
 from app.core.redis_client import push_to_queue
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from enrichment_pipeline import enrich_log
 
 router = APIRouter()
 
@@ -27,6 +31,9 @@ async def ingest_log(log: LogEntry, request: Request):
         "payload": log.payload,
         "received_at": datetime.utcnow().isoformat()
     }
+    
+    # Enrich log with GeoIP and Threat Intel
+    log_data = enrich_log(log_data)
     
     # Push to ingestion pipeline queue
     success = push_to_queue("siem_logs_queue", log_data)

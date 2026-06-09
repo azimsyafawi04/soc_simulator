@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import auth, logs, alerts, ws
+from app.api import auth, logs, alerts, ws, active_response
 
 app = FastAPI(
     title="Educational SIEM Platform API",
@@ -21,6 +21,7 @@ app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(logs.router, prefix="/api/logs", tags=["Log Ingestion"])
 app.include_router(alerts.router, prefix="/api/alerts", tags=["Alerts"])
 app.include_router(ws.router, prefix="/api/ws", tags=["WebSockets"])
+app.include_router(active_response.router, prefix="/api/active-response", tags=["Active Response"])
 
 @app.get("/")
 def health_check():

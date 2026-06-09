@@ -1,83 +1,70 @@
-# Educational SIEM Platform (SOC Simulator)
+# Next-Generation SIEM Platform: Proactive Defense & Risk-Based Alerting
 
-Welcome to the Educational SIEM Platform! This project is designed as a Security Operations Center (SOC) Simulator to help users understand how modern SIEMs operate, detect threats, and generate compliance reports.
+## Executive Summary
 
-## Features
-- **Interactive Dashboard:** View real-time security alerts and system health.
-- **Threat Hunting:** Analyze attack patterns, raw payloads, and MITRE ATT&CK mappings.
-- **ISMS Compliance Reporting:** Automatically generate and export ISO/IEC 27001:2022 compliant PDF reports.
-- **Role-Based Access Control:** Differentiated views for L1/L2 Analysts and L3 Admins.
+As cyber threats become increasingly sophisticated, traditional Security Information and Event Management (SIEM) systems often paralyze Security Operations Centers (SOCs) with overwhelming alert fatigue. Security analysts are frequently bombarded with thousands of low-level, uncontextualized alerts, leading to delayed response times and a heightened risk of missing critical incidents. This project aims to address these critical inefficiencies by engineering a modern, proactive SIEM platform designed around Risk-Based Alerting (RBA) and automated threat containment.
 
-## Installation and Setup
+Instead of relying solely on rigid, signature-based detections that trigger independently, this platform contextualizes events by correlating them against a dynamic asset criticality framework and live threat intelligence feeds. By calculating a holistic Risk Score for each entity, the system intelligently escalates only the most severe, high-confidence threats to the L3 Analysts, drastically reducing false positives and operational noise.
+
+Furthermore, the platform moves beyond passive monitoring by integrating a Wazuh-inspired Active Response (SOAR) capability. When critical thresholds are breached—such as the detection of ransomware behavior or rapid lateral movement—the system can autonomously isolate compromised endpoints, sever malicious connections, and execute pre-defined defensive playbooks, closing the crucial gap between detection and mitigation.
+
+## Architecture Diagram
+
+<!-- [INSERT_ARCHITECTURE_DIAGRAM_HERE] -->
+*Placeholder: Please insert the system architecture diagram here.*
+
+## Key Features & Innovations
+
+### Risk-Based Alerting (RBA)
+We shifted the paradigm from traditional, noisy signature-based alerts to a dynamic Risk-Based Alerting engine. Every incoming log is evaluated against an asset criticality matrix (`assets.json`) and specific MITRE ATT&CK tactics. Alerts are only generated and escalated to analysts when the compounded Risk Score of an entity exceeds a critical threshold, effectively eliminating alert fatigue.
+
+### File Integrity Monitoring (FIM)
+The platform actively monitors critical configuration files and sensitive directories. Unauthorized modifications, deletions, or access attempts are immediately flagged, ensuring that core system integrity is protected against stealthy tampering and ransomware activity.
+
+### Active Response (SOAR Capabilities)
+Inspired by industry leaders like Wazuh, the platform integrates automated containment capabilities. When a severe threat is validated (e.g., active privilege escalation or lateral movement), analysts can trigger immediate, automated active responses directly from the dashboard—such as isolating hosts or blocking IPs—to stop attackers in their tracks.
+
+### Data Enrichment Pipeline
+To provide maximum context to the detection engine, the ingestion pipeline intercepts all logs before indexing and normalizes them into the **Elastic Common Schema (ECS)**. Simultaneously, the pipeline pulls a live, daily Threat Intelligence feed (such as the Tor Exit Node Blocklist), appending geographical data and `threat_intel_match` flags to any malicious incoming connections natively.
+
+## Methodology
+
+This SIEM platform was engineered using industry-standard security frameworks to ensure robust and comprehensive threat coverage:
+- **MITRE ATT&CK Framework:** All detection rules are directly mapped to specific MITRE tactics (e.g., *TA0001 - Initial Access*, *TA0004 - Privilege Escalation*), standardizing the threat classification and enabling analysts to understand the adversary's exact position in the kill chain.
+- **Splunk PEAK (Prepare, Execute, and Act with Knowledge):** The threat hunting workspace and operational workflow were heavily inspired by the PEAK methodology, providing a structured, hypothesis-driven environment for L3 Analysts to conduct proactive investigations.
+
+## Technical Stack
+
+This project leverages a decoupled, highly-scalable microservices architecture orchestrated via Docker:
+- **Frontend:** React.js, TailwindCSS, Recharts, React-Simple-Maps (Vite)
+- **Backend:** FastAPI (Python), Uvicorn
+- **Data Ingestion & Queueing:** Redis
+- **Search & Analytics Engine:** Elasticsearch (v8.10)
+- **Relational Database (State Management):** PostgreSQL
+
+## Installation & Usage
 
 ### Prerequisites
-- Docker and Docker Compose installed on your system.
-- Git (for downloading the repository).
+- Docker and Docker Compose
+- Node.js (for local frontend development)
+- Python 3.11+ (for local backend development)
 
-### 1. Download the Project
-Open a terminal (Command Prompt, PowerShell, or Git Bash) and run:
-```bash
-git clone https://github.com/azimsyafawi04/soc_simulator.git
-cd soc_simulator
-```
+### Quick Start
+To deploy the entire stack locally using Docker Compose:
 
-### 2. Starting the Platform
-The platform is fully containerized and runs on Docker. To start the entire stack (Frontend, Backend, Database, Elasticsearch, Redis), run the following command in the root directory:
-```bash
-docker-compose up -d --build
-```
-Once the build completes and the containers are running, open your web browser and navigate to `http://localhost:5173`.
+1. Clone the repository and navigate to the root directory.
+2. Build and spin up the microservices:
+   ```bash
+   docker-compose up -d --build
+   ```
+3. Access the platforms:
+   - **SIEM Operations Dashboard:** `http://localhost:5173`
+   - **Backend API Documentation (Swagger):** `http://localhost:8000/docs`
+   - **Elasticsearch Engine:** `http://localhost:9200`
 
-### 2. Logging In
-- The system uses strict Role-Based Access Control (RBAC). Registration is restricted to Admins.
-- To access all features (including User Management), log in as an **L3 Admin**.
-- To simulate an analyst role, log in as an **L1/L2 Analyst**.
+## Future Roadmap
 
----
-
-## System Interface & Usage
-
-### 1. Real-Time Security Dashboard
-![Dashboard](screenshots/dashboard.png)
-**Purpose:** Provides a high-level, real-time overview of the organization's security posture.
-**Usage:** Use this screen to monitor active incidents, critical alerts, and total event volume over a 24-hour period. The Live Alert Feed instantly shows incoming attacks such as SQL Injections or Multiple Failed Logins.
-
-### 2. Endpoints Management
-![Endpoints](screenshots/endpoints.png)
-**Purpose:** Tracks all monitored assets (servers, user laptops, etc.) within the network.
-**Usage:** Analysts can view the status (Online/Offline) and resource consumption (CPU & RAM) of individual endpoints. Endpoints under active attack are highlighted with red alert badges, allowing for quick isolation.
-
-### 3. Network Traffic Analysis (MSSP)
-![Network](screenshots/network.png)
-**Purpose:** Deep packet inspection and multi-tenant traffic monitoring.
-**Usage:** Select specific client networks via the top dropdown. Monitor inbound connections via the Geo-IP Source Countries map. The Top Talkers table actively tags flows as *Normal*, *Anomaly Detected*, or *Review Needed* based on behavioral analysis.
-
-### 4. Live Log Explorer
-![Log Explorer](screenshots/log_explorer.png)
-**Purpose:** Real-time raw log ingestion and filtering.
-**Usage:** Watch logs stream in via Live Tail. Use the advanced filtering (Source, Level, Time) or the search bar to pinpoint specific events. Expanding any log row reveals the complete, raw JSON payload for deep forensic inspection (simulating Elasticsearch document viewing).
-
-### 5. Threat Hunting & Attack Analysis
-![Attack Analysis](screenshots/attack_analysis.png)
-**Purpose:** Dedicated interface for investigating active cyber attacks.
-**Usage:** When an anomaly is detected, analysts use this page to view the Attacker Profile (Origin IP, Target Asset) and MITRE ATT&CK mapping. Expanding a row in the IOC Inspection table reveals the **raw malicious payload** (e.g., SQL syntax or shell commands), enabling analysts to block the IP or export the PCAP for forensics.
-
-### 6. ISMS Compliance Report Generator
-![ISMS Report](screenshots/isms_report.png)
-**Purpose:** Automates Governance, Risk, and Compliance (GRC) reporting.
-**Usage:** Click "Generate Report" to dynamically pull the latest SIEM alert data and vulnerabilities into a formal ISO/IEC 27001:2022 framework layout. Click "Export to PDF" to generate a clean, print-ready A4 document for management or auditors.
-
-### 🕵️‍♂️ SOC Analyst Workflow Summary
-If you are presenting or using this simulator, follow this standard incident response workflow:
-1. **Monitor the Dashboard:** Wait for a critical alert to appear in the Live Alert Feed.
-2. **Inspect Logs (Log Explorer):** Filter by `CRITICAL` or search for specific attack vectors (e.g., "SQL syntax") to find the exact raw log entry.
-3. **Analyze the Attack (Attack Analysis):** Study the attacker's profile and map their actions against the MITRE ATT&CK framework to understand their tactics.
-4. **Trace the Network (Network):** Use the Geo-IP map to see where the traffic originated from, and check the Top Talkers for anomalies.
-5. **Generate Reports (ISMS Report):** At the end of your shift or upon management request, generate an automated ISO/IEC 27001 report and export it to PDF for auditing.
-
----
-
-## Architecture
-- **Frontend:** React + Vite + Tailwind CSS + Recharts
-- **Backend:** Python + FastAPI
-- **Data Layer:** PostgreSQL (Storage), Redis (Caching), Elasticsearch (Log Search)
+As part of the continuous evolution of this SIEM platform, the following advanced features are prioritized for future development:
+1. **Machine Learning Anomaly Detection:** Implement an unsupervised ML model (e.g., Isolation Forests) to detect behavioral anomalies that lack known signatures, such as subtle insider threats or slow data exfiltration.
+2. **Cloud Security Posture Management (CSPM):** Integrate API hooks to ingest AWS CloudTrail and Azure Activity logs, providing comprehensive monitoring and alerting for multi-cloud environments.
+3. **Advanced Playbook Automation:** Expand the Active Response module to support multi-step YAML playbooks, allowing for complex, conditional response chains across various firewalls and EDR solutions.

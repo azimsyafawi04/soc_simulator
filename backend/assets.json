@@ -1,0 +1,9 @@
+{
+  "10.0.0.50": "Crown_Jewels",
+  "10.0.0.12": "Critical",
+  "192.168.1.100": "Privileged",
+  "admin-workstation": "Privileged",
+  "user-laptop": "Normal",
+  "web-server-01": "Critical",
+  "10.0.0.200": "Normal"
+}

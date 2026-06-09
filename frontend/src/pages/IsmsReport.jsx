@@ -12,14 +12,14 @@ function IsmsReport() {
       setReportData({
         date: new Date().toLocaleDateString(),
         threats: [
-          { asset: 'Web Server (10.0.2.15)', threat: 'SQL Injection (Union-based)', cve: 'CVE-2023-2828', impact: 'High' },
-          { asset: 'VPN Gateway (10.0.1.20)', threat: 'Brute Force SSH', cve: 'N/A', impact: 'Medium' },
-          { asset: 'Database (10.0.5.10)', threat: 'Command Injection / RCE', cve: 'CVE-2021-44228', impact: 'Critical' }
+          { asset: 'Web Server (10.0.2.15)', threat: 'High Shannon Entropy Payload', cve: 'Defense Evasion', impact: 'High' },
+          { asset: 'VPN Gateway (10.0.1.20)', threat: 'Password Spraying (Event 4625)', cve: 'Credential Access', impact: 'Critical' },
+          { asset: 'Windows AD (10.0.5.10)', threat: 'Suspicious PowerShell Execution', cve: 'Execution', impact: 'Critical' }
         ],
         risks: [
-          { id: 'RSK-01', desc: 'Database exposure via Web Frontend vulnerability', likelihood: 'High', impact: 'Critical', level: 'Critical' },
-          { id: 'RSK-02', desc: 'Unauthorized access via compromised credentials', likelihood: 'Medium', impact: 'High', level: 'High' },
-          { id: 'RSK-03', desc: 'Volumetric DDoS leading to service downtime', likelihood: 'Medium', impact: 'Medium', level: 'Medium' }
+          { id: 'RSK-01', desc: 'Unauthorized lateral movement via compromised AD credentials', likelihood: 'High', impact: 'Critical', level: 'Critical' },
+          { id: 'RSK-02', desc: 'Fileless malware executing via encoded PowerShell scripts', likelihood: 'Medium', impact: 'High', level: 'High' },
+          { id: 'RSK-03', desc: 'Advanced obfuscation bypassing standard pattern matching (DGA)', likelihood: 'Medium', impact: 'Medium', level: 'Medium' }
         ]
       });
       setIsGenerating(false);

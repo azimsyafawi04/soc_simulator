@@ -7,6 +7,31 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from app.core.redis_client import pop_from_queue
 from app.core.es_client import index_log
+from datetime import datetime
+
+def normalize_to_ecs(log_data: dict) -> dict:
+    # Standardize Timestamp
+    if "received_at" in log_data:
+        log_data["@timestamp"] = log_data.pop("received_at")
+    else:
+        log_data["@timestamp"] = datetime.utcnow().isoformat()
+        
+    # Standardize IP fields into ECS `source.ip`
+    ip_candidates = [
+        log_data.pop("source_ip", None),
+        log_data.get("payload", {}).get("client_ip"),
+        log_data.get("payload", {}).get("src_ip"),
+        log_data.get("payload", {}).get("ip_address"),
+        log_data.get("payload", {}).get("attacker_ip")
+    ]
+    
+    resolved_ip = next((ip for ip in ip_candidates if ip), "Unknown")
+    
+    if "source" not in log_data:
+        log_data["source"] = {}
+    log_data["source"]["ip"] = resolved_ip
+    
+    return log_data
 
 def run_log_worker():
     print("Starting SIEM Log Processor Worker...")
@@ -23,8 +48,11 @@ def run_log_worker():
                 # For now, we index the raw JSON directly into Elasticsearch
                 
                 # Determine index name (e.g. siem-logs-2026-06-08)
-                date_str = log_data.get("received_at", "").split("T")[0]
+                date_str = log_data.get("received_at", log_data.get("@timestamp", "")).split("T")[0]
                 index_name = f"siem-logs-{date_str}"
+                
+                # Normalize to Elastic Common Schema (ECS)
+                log_data = normalize_to_ecs(log_data)
                 
                 # Send to Elasticsearch
                 res = index_log(index_name, log_data)

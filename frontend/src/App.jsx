@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Routes, Route, NavLink, Navigate, useLocation } from 'react-router-dom';
-import { Activity, ShieldAlert, Server, Globe, Settings, LogOut, Target, FileText, Terminal } from 'lucide-react';
+import { Activity, ShieldAlert, Server, Globe, Settings, LogOut, Target, FileText, Terminal, Radar, ClipboardList } from 'lucide-react';
 
 import Dashboard from './pages/Dashboard';
 import Endpoints from './pages/Endpoints';
@@ -10,6 +10,8 @@ import SettingsPage from './pages/Settings';
 import Login from './pages/Login';
 import AttackAnalysis from './pages/AttackAnalysis';
 import IsmsReport from './pages/IsmsReport';
+import ThreatHunting from './pages/ThreatHunting';
+import CapabilityMatrix from './pages/CapabilityMatrix';
 
 // Protected Route Component
 const ProtectedRoute = ({ user, children }) => {
@@ -78,11 +80,20 @@ function App() {
               Analytics & Reporting
             </div>
             
+            {user?.role === 'L3 Admin' && (
+              <NavLink to="/threat-hunting" className={navLinkClass}>
+                <Radar size={20} /> Threat Hunting
+              </NavLink>
+            )}
+            
             <NavLink to="/attack-analysis" className={navLinkClass}>
               <Target size={20} /> Attack Analysis
             </NavLink>
             <NavLink to="/isms-report" className={navLinkClass}>
               <FileText size={20} /> ISMS Report
+            </NavLink>
+            <NavLink to="/capability-matrix" className={navLinkClass}>
+              <ClipboardList size={20} /> Feature Matrix
             </NavLink>
           </nav>
           
@@ -118,6 +129,8 @@ function App() {
             <Route path="/log-explorer" element={<LogExplorer />} />
             <Route path="/attack-analysis" element={<AttackAnalysis />} />
             <Route path="/isms-report" element={<IsmsReport />} />
+            <Route path="/threat-hunting" element={<ThreatHunting />} />
+            <Route path="/capability-matrix" element={<CapabilityMatrix />} />
             <Route path="/settings" element={<SettingsPage user={user} />} />
             {/* Fallback route */}
             <Route path="*" element={<Navigate to="/" replace />} />
