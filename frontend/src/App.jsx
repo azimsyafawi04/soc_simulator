@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Routes, Route, NavLink, Navigate, useLocation } from 'react-router-dom';
-import { Activity, ShieldAlert, Server, Globe, Settings, LogOut, Target, FileText } from 'lucide-react';
+import { Activity, ShieldAlert, Server, Globe, Settings, LogOut, Target, FileText, Terminal } from 'lucide-react';
 
 import Dashboard from './pages/Dashboard';
 import Endpoints from './pages/Endpoints';
 import Network from './pages/Network';
+import LogExplorer from './pages/LogExplorer';
 import SettingsPage from './pages/Settings';
 import Login from './pages/Login';
 import AttackAnalysis from './pages/AttackAnalysis';
@@ -66,6 +67,14 @@ function App() {
             </NavLink>
             
             <div className="mt-4 mb-1 px-3 text-xs font-bold text-gray-500 uppercase tracking-wider">
+              Operations
+            </div>
+            
+            <NavLink to="/log-explorer" className={navLinkClass}>
+              <Terminal size={20} /> Log Explorer
+            </NavLink>
+            
+            <div className="mt-4 mb-1 px-3 text-xs font-bold text-gray-500 uppercase tracking-wider">
               Analytics & Reporting
             </div>
             
@@ -106,6 +115,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/endpoints" element={<Endpoints />} />
             <Route path="/network" element={<Network />} />
+            <Route path="/log-explorer" element={<LogExplorer />} />
             <Route path="/attack-analysis" element={<AttackAnalysis />} />
             <Route path="/isms-report" element={<IsmsReport />} />
             <Route path="/settings" element={<SettingsPage user={user} />} />
